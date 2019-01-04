@@ -62,7 +62,11 @@ export function createRouter () {
             component: () => import(
               /* webpackChunkName: "documentation" */
               '@/pages/documentation/Page.vue'
-            )
+            ),
+            children: [{
+              path: '',
+              component: () => import('@/components/core/View')
+            }]
           }
         ]
       },

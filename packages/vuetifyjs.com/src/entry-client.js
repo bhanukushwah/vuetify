@@ -40,7 +40,10 @@ createApp({
       Promise.all([
         ...activated.map(c => {
           if (c.asyncData) {
-            return c.asyncData({ store })
+            return c.asyncData({
+              store,
+              route: to
+            })
           }
         })
       ]).finally(next)

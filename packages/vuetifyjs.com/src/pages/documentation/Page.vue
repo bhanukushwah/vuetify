@@ -4,11 +4,7 @@
 
     <core-ad />
 
-    <core-view
-      :namespace="namespace"
-      :page="page"
-      :lang="lang"
-    />
+    <router-view />
 
     <core-fab />
 
@@ -17,34 +13,30 @@
 </template>
 
 <script>
-  // https://ssr.vuejs.org/guide/data.html#store-code-splitting
-  import docModule from '@/store/modules/documentation'
+  import camelCase from 'lodash/camelCase'
+  import kebabCase from 'lodash/kebabCase'
+  import upperFirst from 'lodash/upperFirst'
 
   export default {
     name: 'Documentation',
 
-    asyncData ({ store }) {
-      store.registerModule('documentation', docModule)
-    },
+    async asyncData ({ store, route }) {
+      // console.log(route.params)
+      const namespace = kebabCase(route.params.namespace)
+      const page = upperFirst(camelCase(route.params.page))
+      let structure
 
-    props: {
-      // Provided by router
-      namespace: {
-        type: String,
-        default: undefined
-      },
-      page: {
-        type: String,
-        default: undefined
-      },
-      lang: {
-        type: String,
-        default: undefined
+      try {
+        structure = (await import(
+          /* webpackChunkName: "pages" */
+          `@/data/pages/${namespace}/${page}.json`
+        )).default
+      } catch (err) {
+        console.log(err)
+        structure = null
       }
-    },
 
-    destroyed () {
-      this.$store.unregisterModule('documentation')
+      store.commit('documentation/setPage', structure)
     }
   }
 </script>

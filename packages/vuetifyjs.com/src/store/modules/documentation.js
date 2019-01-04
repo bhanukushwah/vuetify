@@ -1,3 +1,4 @@
+import { set } from '@/util/vuex'
 import deprecatedIn from '@/data/deprecated'
 import newIn from '@/data/new'
 
@@ -6,6 +7,11 @@ export default {
 
   state: {
     deprecatedIn,
-    newIn
+    newIn,
+    page: null
+  },
+
+  mutations: {
+    setPage: set('page')
   }
 }

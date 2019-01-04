@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    v-if="structure !== false"
-    id="page"
-  >
+  <v-container id="page">
     <template v-if="structure">
       <doc-heading v-if="structure.title">
         {{ structure.title }}
@@ -29,7 +26,6 @@
       <doc-contribution />
     </template>
   </v-container>
-  <not-found v-else />
 </template>
 
 <script>
@@ -41,12 +37,9 @@
   import kebabCase from 'lodash/kebabCase'
   import camelCase from 'lodash/camelCase'
   import upperFirst from 'lodash/upperFirst'
+  import NotFound from '@/pages/general/404'
 
   export default {
-    components: {
-      NotFound: () => import('@/pages/general/404')
-    },
-
     provide () {
       return {
         namespace: upperFirst(camelCase(this.namespace)),
@@ -71,32 +64,62 @@
       }
     },
 
-    data: () => ({
-      structure: undefined
-    }),
+    // this only works in routes
+    async asyncData ({ store, route }) {
+      console.log('async')
+      const namespace = kebabCase(route.params.namespace)
+      const page = upperFirst(camelCase(route.params.page))
+
+      try {
+        console.log('here', route.params)
+        store.commit('documentation/setPage', (await import(
+          /* webpackChunkName: "pages" */
+          `@/data/pages/${namespace}/${page}.json`
+        )).default)
+      } catch (err) {
+        store.commit('documentation/setPage', null)
+      }
+    },
+
+    // data: () => ({
+    //   structure: undefined
+    // }),
 
     computed: {
+      structure () {
+        return this.$store.state.documentation.page
+      },
       composite () {
         return `${this.namespace}-${this.page}`
       }
     },
 
-    async created () {
-      const namespace = kebabCase(this.namespace)
-      const page = upperFirst(camelCase(this.page))
+    created () {
+      // const namespace = kebabCase(this.namespace)
+      // const page = upperFirst(camelCase(this.page))
 
-      this.setIsLoading(true)
+      // this.setIsLoading(true)
 
-      try {
-        this.structure = (await import(
-          /* webpackChunkName: "pages" */
-          `@/data/pages/${namespace}/${page}.json`
-        )).default
-      } catch (err) {
-        this.structure = false
-      }
+      // this.structure = () => ({
+      //   component: import(
+      //     /* webpackChunkName: "pages" */
+      //     `@/data/pages/${namespace}/${page}.json`
+      //   ),
+      //   error: NotFound
+      // })
 
-      this.setIsLoading(false)
+      // try {
+      //   // created doesn't block rendering
+      //   // this needs to be
+      //   this.structure = (await import(
+      //     /* webpackChunkName: "pages" */
+      //     `@/data/pages/${namespace}/${page}.json`
+      //   )).default
+      // } catch (err) {
+      //   this.structure = false
+      // }
+
+      // this.setIsLoading(false)
     },
 
     mounted () {

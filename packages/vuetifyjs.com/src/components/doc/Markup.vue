@@ -1,12 +1,15 @@
 <template>
-  <div :id="id" class="v-markup">
-    <prism
+  <div
+    :id="id"
+    class="v-markup"
+  >
+    <!-- <prism
       v-if="$slots.default || code"
       :language="language"
       :code="code"
-    ><slot /></prism>
+    ><slot /></prism> -->
 
-    <div
+    <!-- <div
       v-if="filename"
       class="v-markup__edit"
     >
@@ -18,9 +21,9 @@
       >
         <v-icon>mdi-pencil</v-icon>
       </a>
-    </div>
+    </div> -->
 
-    <div class="v-markup__copy">
+    <!-- <div class="v-markup__copy">
       <v-icon
         title="Copy code"
         @click="copyMarkup"
@@ -33,9 +36,9 @@
           class="v-markup__copied"
         >Copied</span>
       </v-slide-x-transition>
-    </div>
+    </div> -->
 
-    <a
+    <!-- <a
       v-if="filename"
       :href="href"
       target="_blank"
@@ -43,7 +46,7 @@
       class="v-markup__filename"
     >
       <span v-text="file" />
-    </a>
+    </a> -->
   </div>
 </template>
 
